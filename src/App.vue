@@ -42,12 +42,24 @@
           <div v-else-if="pokemon">
             <v-row>
               <v-col cols="12" md="4" class="text-center">
-                <v-img
-                  :src="currentSprite"
-                  contain
-                  height="200"
-                  class="rounded-lg elevation-5 mb-2"
-                />
+              <v-img
+                :src="currentSprite"
+                contain
+                height="200"
+                class="rounded-lg elevation-5 mb-2 position-relative"
+              >
+                <!-- Height overlay -->
+                <div class="overlay-info top-left">
+                  <v-icon class="mr-1">mdi-arrow-up-down</v-icon>
+                  {{ (pokemon.height / 10).toFixed(1) }} m
+                </div>
+
+                <!-- Weight overlay -->
+                <div class="overlay-info bottom-left">
+                  <v-icon class="mr-1">mdi-weight-kilogram</v-icon>
+                  {{ (pokemon.weight / 10).toFixed(1) }} kg
+                </div>
+              </v-img>
                 <div>
                   <v-btn width="58" height="58" icon @click="previousSprite">
                     <v-icon>mdi-chevron-left</v-icon>
@@ -57,6 +69,22 @@
                   </v-btn>
                 </div>
               </v-col>
+              <v-row class="mb-2 d-flex d-md-none" justify="center">
+              <v-col
+                v-for="(src, index) in availableSpriteList"
+                :key="index"
+                cols="3"
+                class="text-center"
+              >
+                <v-img
+                  :src="src.url"
+                  max-height="60"
+                  contain
+                  class="rounded-lg position-relative"
+                  @click="selectSprite(index)"
+                />
+              </v-col>
+            </v-row>
 
               <v-col cols="12" md="8" class="d-flex flex-column justify-start fill-height">
                 <h2 class="text-h4 font-weight-bold mb-2 text-colored-title">
@@ -70,7 +98,7 @@
                     {{ type.type.name }}
                   </v-chip>
                 </h2>
-                <v-list outlined dense class="rounded-lg pa-2 white--text" style="background-color: transparent; color: black;">
+                <v-list outlined dense class="rounded-lg pa-2 white--text" style="background-color: transparent; color: black; min-height: 150px;">
                   <v-list-item v-for="(ability, index) in abilities" :key="index">
                     <v-list-item-content>
                       <v-list-item-title class="ability-line">
@@ -88,29 +116,29 @@
                 </v-list>
               </v-col>
             </v-row>
-            <v-row class="mt-2" justify="center">
-              <v-col
-                v-for="(src, index) in availableSpriteList"
-                :key="index"
-                class="text-center"
-              >
-                <v-img
-                  :src="src.url"
-                  max-height="80"
-                  contain
-                  class="rounded-lg position-relative"
-                  @click="selectSprite(index)"
-                >
-                </v-img>
-              </v-col>
-            </v-row>
-
+          <v-row class="mt-2 d-none d-md-flex" justify="center">
+            <v-col
+              v-for="(src, index) in availableSpriteList"
+              :key="'bottom-' + index"
+              cols="3"
+              class="text-center"
+            >
+              <v-img
+                :src="src.url"
+                max-height="80"
+                contain
+                class="rounded-lg position-relative"
+                @click="selectSprite(index)"
+              />
+            </v-col>
+          </v-row>
+        
             <v-divider class="my-4"></v-divider>
 
             <h3 class="text-h6 font-weight-bold mb-2 text-white">Prilagodi Pokemona</h3>
               <v-form ref="customForm" @submit.prevent="saveCustomPokemon">
                 <v-row class="mobile-flex">
-                  <v-col md="4">
+                  <v-col md="4" class="no-padding-bottom">
                     <v-hover v-slot="{ hover }">
                       <div
                         class="dropzone"
@@ -171,6 +199,10 @@
                         </label>
                       </div>
                     </v-hover>
+                     <v-btn width="100%" :loading="saving" color="deep-purple accent-4" dark type="submit" class="mt-4 glow-btn mb-4" elevation="4">
+                      <v-icon small class="mr-1">mdi-content-save-all</v-icon>
+                       Shrani prilagoditve
+                      </v-btn>
                     </v-col>
                     <v-col>
                       <v-text-field
@@ -195,22 +227,6 @@
                         required
                       />
                   </v-col>
-              </v-row>
-              <v-row>
-                <v-col md="4">
-                  <v-btn
-                    width="100%"
-                    :loading="saving"
-                    color="deep-purple accent-4"
-                    dark
-                    type="submit"
-                    class="mt-4 glow-btn"
-                    elevation="4"
-                  >
-                    <v-icon small class="mr-1">mdi-content-save-all</v-icon>
-                    Shrani prilagoditve
-                  </v-btn>
-                </v-col>
               </v-row>
             </v-form>
           </div>
@@ -524,7 +540,7 @@ body {
 
 .dropzone {
   height: 100%;
-  max-height: 210px;
+  max-height: 160px;
   border: 2px dashed #9575cd;
   padding: 30px;
   border-radius: 12px;
@@ -636,7 +652,60 @@ body {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
+.theme--light.v-label {
+  color: white;
+}
+
+.ruler-container {
+  position: relative;
+  height: 200px; /* Match image height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
+}
+
+.ruler-bar {
+  width: 4px;
+  background-color: #ccc;
+  flex-grow: 1;
+  border-radius: 2px;
+}
+
+.ruler-label {
+  margin-top: 4px;
+  font-size: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.overlay-info {
+  position: absolute;
+  color: white;
+  margin: 20px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.bottom-left {
+  bottom: 6px;
+  left: 6px;
+}
+
+.theme--light.v-label {
+    color: white;
+}
+
 @media only screen and (max-width: 600px) {
+  .no-padding-bottom {
+    padding-top: 0;
+  }
   .mobile-flex {
     flex-direction: column;
     flex-flow: column-reverse;
