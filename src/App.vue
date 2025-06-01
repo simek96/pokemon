@@ -126,20 +126,38 @@
                           </div>
 
                           <div v-else class="preview-wrapper">
-                            <v-img
-                              :src="imagePreview"
-                              max-height="140"
-                              contain
-                              class="rounded-lg elevation-2"
-                            />
+                            <label class="file-label">
+                              <v-img
+                                :src="imagePreview"
+                                max-height="140"
+                                contain
+                                class="rounded-lg elevation-2"
+                              />
+                              <v-btn
+                                class="change-btn"
+                                small
+                                color="purple lighten-2 white--text"
+                                @click.stop="$refs.imageInput.click()"
+                              >
+                                <v-icon small class="mr-1">mdi-image-edit</v-icon>
+                                Zamenjaj sliko
+                              </v-btn>
+
+                              <input
+                                ref="imageInput"
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg, image/svg+xml"
+                                @change="handleFileChange"
+                                class="file-input"
+                              />
+                            </label>
                             <v-btn
-                              class="change-btn"
-                              small
-                              color="purple lighten-2 white--text"
-                              @click.stop="$refs.imageInput.click()"
+                              class="remove-btn"
+                              icon
+                              color="red lighten-1"
+                              @click.stop="removeImage"
                             >
-                              <v-icon small class="mr-1">mdi-image-edit</v-icon>
-                              Zamenjaj sliko
+                              <v-icon small>mdi-delete</v-icon>
                             </v-btn>
                           </div>
 
@@ -281,8 +299,16 @@ availableSpriteList() {
     }
   },
   methods: {
-    toggleAbility(index) {
-  this.abilities[index].expanded = !this.abilities[index].expanded;
+    removeImage() {
+      this.imagePreview = '';
+      this.customData.imageFile = null;
+      this.customData.imageUrl = '';
+      if (this.$refs.imageInput) {
+        this.$refs.imageInput.value = '';
+      }
+    },
+     toggleAbility(index) {
+      this.abilities[index].expanded = !this.abilities[index].expanded;
   },
   async extractColorsFromImage(url) {
     const img = new Image();
@@ -334,7 +360,7 @@ availableSpriteList() {
       const parsed = JSON.parse(savedData);
       this.customData = {
         ...parsed,
-        imageFile: null // ne nalagamo file-a nazaj
+        imageFile: null
       };
       this.imagePreview = parsed.imageUrl || '';
     } else {
@@ -356,8 +382,6 @@ availableSpriteList() {
       this.pokemon = data;
       this.currentSpriteIndex = 0;
       this.loadAbilities(data.abilities);
-
-      // ⬇️ Extract colors from main sprite
       const spriteUrl = data.sprites.front_default;
       if (spriteUrl) {
         const colors = await this.extractColorsFromImage(spriteUrl);
@@ -594,6 +618,22 @@ body {
   color: #888;
   padding-left: 4px;
   font-weight: bold;
+}
+
+  .remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 @media only screen and (max-width: 600px) {
