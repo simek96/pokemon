@@ -37,66 +37,49 @@
             </v-col>
           </v-row>
 
-          <v-skeleton-loader v-if="loadingPokemon" type="card, image, text" />
+          <v-skeleton-loader v-if="loadingPokemon" type="image" />
 
           <div v-else-if="pokemon">
             <v-row>
               <v-col cols="12" md="4" class="text-center">
-              <v-img
-                :src="currentSprite"
-                contain
-                height="200"
-                class="rounded-lg elevation-5 mb-2 position-relative"
-              >
-                <!-- Height overlay -->
-                <div class="overlay-info top-left">
-                  <v-icon class="mr-1">mdi-arrow-up-down</v-icon>
-                  {{ (pokemon.height / 10).toFixed(1) }} m
-                </div>
+                <v-img
+                  :src="currentSprite"
+                  contain
+                  height="200"
+                  class="rounded-lg elevation-5 mb-2 position-relative"
+                >
+                  <div class="overlay-info top-left">
+                    <v-icon class="mr-1">mdi-arrow-up-down</v-icon>
+                    {{ (pokemon.height / 10).toFixed(1) }} m
+                  </div>
 
-                <!-- Weight overlay -->
-                <div class="overlay-info bottom-left">
-                  <v-icon class="mr-1">mdi-weight-kilogram</v-icon>
-                  {{ (pokemon.weight / 10).toFixed(1) }} kg
-                </div>
-              </v-img>
-                <div>
-                  <v-btn width="58" height="58" icon @click="previousSprite">
-                    <v-icon>mdi-chevron-left</v-icon>
-                  </v-btn>
-                  <v-btn width="58" height="58" icon @click="nextSprite">
-                    <v-icon>mdi-chevron-right</v-icon>
-                  </v-btn>
-                </div>
+                  <div class="overlay-info bottom-left">
+                    <v-icon class="mr-1">mdi-weight-kilogram</v-icon>
+                    {{ (pokemon.weight / 10).toFixed(1) }} kg
+                  </div>
+                </v-img>
               </v-col>
               <v-row class="mb-2 d-flex d-md-none" justify="center">
-              <v-col
-                v-for="(src, index) in availableSpriteList"
-                :key="index"
-                cols="3"
-                class="text-center"
-              >
-                <v-img
-                  :src="src.url"
-                  max-height="60"
-                  contain
-                  class="rounded-lg position-relative"
-                  @click="selectSprite(index)"
-                />
-              </v-col>
-            </v-row>
-
+                <v-col
+                  v-for="(src, index) in availableSpriteList"
+                  :key="index"
+                  class="text-center"
+                >
+                </v-col>
+              </v-row>
               <v-col cols="12" md="8" class="d-flex flex-column justify-start fill-height">
                 <h2 class="text-h4 font-weight-bold mb-2 text-colored-title">
                   <span v-for="(char, i) in pokemon.name.toUpperCase().split('')" :key="i"
                         :style="{ color: dominantColors[i % dominantColors.length] }">
                     {{ char }}
                   </span>
-                  <v-chip color="light-blue lighten-4" class="ma-1">Height: {{ pokemon.height }}</v-chip>
-                  <v-chip color="green lighten-3" class="ma-1">Weight: {{ pokemon.weight }}</v-chip>
-                  <v-chip v-for="(type, i) in pokemon.types" :key="i" color="amber lighten-4" class="ma-1 text-capitalize">
-                    {{ type.type.name }}
-                  </v-chip>
+                  <div style="display:inline-block">
+                    <v-chip color="light-blue lighten-4" class="ma-1">Height: {{ pokemon.height }}</v-chip>
+                    <v-chip color="green lighten-3" class="ma-1">Weight: {{ pokemon.weight }}</v-chip>
+                    <v-chip v-for="(type, i) in pokemon.types" :key="i" color="amber lighten-4" class="ma-1 text-capitalize">
+                      {{ type.type.name }}
+                    </v-chip>
+                  </div>
                 </h2>
                 <v-list outlined dense class="rounded-lg pa-2 white--text" style="background-color: transparent; color: black; min-height: 150px;">
                   <v-list-item v-for="(ability, index) in abilities" :key="index">
@@ -116,25 +99,29 @@
                 </v-list>
               </v-col>
             </v-row>
-          <v-row class="mt-2 d-none d-md-flex" justify="center">
-            <v-col
-              v-for="(src, index) in availableSpriteList"
-              :key="'bottom-' + index"
-              cols="3"
-              class="text-center"
-            >
-              <v-img
-                :src="src.url"
-                max-height="80"
-                contain
-                class="rounded-lg position-relative"
-                @click="selectSprite(index)"
-              />
-            </v-col>
-          </v-row>
-        
+            <v-row>
+              <div style="display: flex; align-items: center;" class="ml-1">
+                <v-btn width="58" height="58" icon @click="previousSprite">
+                  <v-icon>mdi-chevron-left</v-icon>
+                </v-btn>
+                <v-btn width="58" height="58" icon @click="nextSprite">
+                  <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+              </div>
+              <div>
+                <span v-for="(src, index) in availableSpriteList" :key="'bottom-' + index" style="display: inline-flex;" >
+                <v-img
+                  :src="src.url"
+                  max-height="130"
+                  contain
+                  class="rounded-lg position-relative"
+                  @click="selectSprite(index)"
+                />
+              </span>
+            </div>
+            
+            </v-row>
             <v-divider class="my-4"></v-divider>
-
             <h3 class="text-h6 font-weight-bold mb-2 text-white">Prilagodi Pokemona</h3>
               <v-form ref="customForm" @submit.prevent="saveCustomPokemon">
                 <v-row class="mobile-flex">
@@ -157,7 +144,7 @@
                             <label class="file-label">
                               <v-img
                                 :src="imagePreview"
-                                max-height="140"
+                                max-height="100"
                                 contain
                                 class="rounded-lg elevation-2"
                               />
@@ -168,7 +155,7 @@
                                 @click.stop="$refs.imageInput.click()"
                               >
                                 <v-icon small class="mr-1">mdi-image-edit</v-icon>
-                                Zamenjaj sliko
+                                Zamenjaj
                               </v-btn>
 
                               <input
@@ -180,9 +167,8 @@
                               />
                             </label>
                             <v-btn
-                              class="remove-btn"
+                              class="remove-btn deep-purple accent-4 white--text"
                               icon
-                              color="red lighten-1"
                               @click.stop="removeImage"
                             >
                               <v-icon small>mdi-delete</v-icon>
@@ -211,7 +197,7 @@
                         :rules="[rules.required, rules.alphaOnly, rules.max50]"
                         outlined
                         dense
-                        color="indigo"
+                        class="deep-purple--text"
                         prepend-inner-icon="mdi-pencil"
                         required
                       />
@@ -585,11 +571,11 @@ body {
 }
 
 .change-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  z-index: 2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    right: 0;
+    top: 0px;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .file-label {
@@ -636,20 +622,11 @@ body {
   font-weight: bold;
 }
 
-  .remove-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 3;
-  background-color: rgba(255, 255, 255, 0.8);
-}
-
 .remove-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 3;
-  background-color: rgba(255, 255, 255, 0.9);
+    top: -17px;
+    left: -17px;
+    z-index: 3;
 }
 
 .theme--light.v-label {
@@ -698,7 +675,7 @@ body {
   left: 6px;
 }
 
-.theme--light.v-label {
+/deep/ .theme--light.v-label {
     color: white;
 }
 
